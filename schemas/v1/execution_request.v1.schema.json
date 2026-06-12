@@ -1,0 +1,235 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "./execution_request.v1.schema.json",
+  "title": "Execution Request v1-alpha.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "requestId",
+    "traceId",
+    "idempotencyKey",
+    "contractEnvelope",
+    "budget",
+    "requestedCapabilities",
+    "authorizationPolicy",
+    "eventDelivery",
+    "createdAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "execution_request.v1-alpha.1"
+    },
+    "requestId": {
+      "$ref": "./common_defs.v1.schema.json#/$defs/id"
+    },
+    "traceId": {
+      "$ref": "./common_defs.v1.schema.json#/$defs/traceId"
+    },
+    "idempotencyKey": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "contractEnvelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaUri",
+        "schemaVersion",
+        "digest",
+        "payload"
+      ],
+      "properties": {
+        "schemaUri": {
+          "type": "string",
+          "format": "uri"
+        },
+        "schemaVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "digest": {
+          "$ref": "./common_defs.v1.schema.json#/$defs/digest"
+        },
+        "payload": true
+      }
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "limits",
+        "onExhaustion"
+      ],
+      "properties": {
+        "limits": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "resourceId",
+              "amount",
+              "unit",
+              "hard"
+            ],
+            "properties": {
+              "resourceId": {
+                "$ref": "./common_defs.v1.schema.json#/$defs/capabilityId"
+              },
+              "amount": {
+                "type": "number",
+                "exclusiveMinimum": 0
+              },
+              "unit": {
+                "type": "string",
+                "minLength": 1
+              },
+              "hard": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "onExhaustion": {
+          "enum": [
+            "stop_and_report",
+            "request_extension"
+          ]
+        }
+      }
+    },
+    "requestedCapabilities": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "capabilityId",
+          "required",
+          "parameters"
+        ],
+        "properties": {
+          "capabilityId": {
+            "$ref": "./common_defs.v1.schema.json#/$defs/capabilityId"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "parameters": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      }
+    },
+    "authorizationPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "preauthorizedCapabilities",
+        "prohibitedCapabilities"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "deny_by_default",
+            "request_when_required",
+            "preauthorized"
+          ]
+        },
+        "preauthorizedCapabilities": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "./common_defs.v1.schema.json#/$defs/capabilityId"
+          }
+        },
+        "prohibitedCapabilities": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "./common_defs.v1.schema.json#/$defs/capabilityId"
+          }
+        }
+      }
+    },
+    "eventDelivery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "inline",
+            "callback",
+            "poll"
+          ]
+        },
+        "callback": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "url"
+          ],
+          "properties": {
+            "url": {
+              "type": "string",
+              "format": "uri"
+            },
+            "authReference": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "mode": {
+                "const": "callback"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "callback"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "mode": {
+                "enum": [
+                  "inline",
+                  "poll"
+                ]
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "callback"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "createdAt": {
+      "$ref": "./common_defs.v1.schema.json#/$defs/timestamp"
+    }
+  }
+}

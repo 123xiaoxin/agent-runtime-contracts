@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "adapter_manifest.v1-alpha.1",
+  "adapter": {
+    "id": "example.adapter.local",
+    "name": "Example Local Adapter",
+    "version": "0.1.0-alpha.1"
+  },
+  "runtime": {
+    "id": "example.runtime.local",
+    "name": "Example Local Runtime",
+    "version": "0.1.0"
+  },
+  "supportedProtocolVersions": [
+    "1.0.0-alpha.1"
+  ],
+  "supportedCapabilities": [
+    {
+      "capabilityId": "execution.submit",
+      "description": "Accept an execution request."
+    },
+    {
+      "capabilityId": "events.inline",
+      "description": "Return ordered events on the request channel."
+    },
+    {
+      "capabilityId": "evidence.observed",
+      "description": "Expose Runtime-observed execution evidence."
+    }
+  ],
+  "unsupportedCapabilities": [],
+  "limits": [
+    {
+      "limitId": "execution.concurrent.max",
+      "value": 1,
+      "unit": "execution"
+    },
+    {
+      "limitId": "request.payload.max",
+      "value": 262144,
+      "unit": "byte"
+    }
+  ],
+  "profileName": "generic-minimal",
+  "profileVersion": "0.1.0-alpha.1"
+}

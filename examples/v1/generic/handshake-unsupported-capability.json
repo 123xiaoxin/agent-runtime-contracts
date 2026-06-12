@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "adapter_manifest.v1-alpha.1",
+  "adapter": {
+    "id": "example.adapter.limited",
+    "name": "Example Limited Adapter",
+    "version": "0.1.0-alpha.1"
+  },
+  "runtime": {
+    "id": "example.runtime.limited",
+    "name": "Example Limited Runtime"
+  },
+  "supportedProtocolVersions": [
+    "1.0.0-alpha.1"
+  ],
+  "supportedCapabilities": [
+    {
+      "capabilityId": "execution.submit"
+    },
+    {
+      "capabilityId": "events.poll"
+    }
+  ],
+  "unsupportedCapabilities": [
+    {
+      "capabilityId": "authorization.interactive",
+      "reason": "The Runtime cannot pause for an authorization decision."
+    },
+    {
+      "capabilityId": "checkpoint.resume",
+      "reason": "The Runtime does not expose resumable checkpoints."
+    }
+  ],
+  "limits": [
+    {
+      "limitId": "execution.concurrent.max",
+      "value": 1,
+      "unit": "execution"
+    }
+  ],
+  "profileName": "generic-limited",
+  "profileVersion": "0.1.0-alpha.1"
+}

@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "execution_request.v1-alpha.1",
+  "requestId": "req-example-001",
+  "traceId": "trace-example-001",
+  "idempotencyKey": "example-simple-request-001",
+  "contractEnvelope": {
+    "schemaUri": "urn:example:master-contract:execution:v1",
+    "schemaVersion": "1.0.0",
+    "digest": {
+      "algorithm": "sha256",
+      "value": "208b3fdadaeb5d58c374a2a97196a8e11eff020478ee4ffd56a284afcb6b3c57"
+    },
+    "payload": {
+      "contractType": "example.master.execution-contract",
+      "contractVersion": "1.0.0",
+      "goal": "Return a deterministic greeting in the execution result.",
+      "allowedActions": [
+        "text.generate"
+      ],
+      "forbiddenActions": [
+        "filesystem.write",
+        "network.external"
+      ],
+      "successCriteria": [
+        "The result contains exactly: Hello from a generic runtime."
+      ]
+    }
+  },
+  "budget": {
+    "limits": [
+      {
+        "resourceId": "wall.time",
+        "amount": 30,
+        "unit": "second",
+        "hard": true
+      },
+      {
+        "resourceId": "operation.count",
+        "amount": 10,
+        "unit": "operation",
+        "hard": true
+      }
+    ],
+    "onExhaustion": "stop_and_report"
+  },
+  "requestedCapabilities": [
+    {
+      "capabilityId": "execution.submit",
+      "required": true,
+      "parameters": {}
+    },
+    {
+      "capabilityId": "events.inline",
+      "required": true,
+      "parameters": {}
+    },
+    {
+      "capabilityId": "text.generate",
+      "required": true,
+      "parameters": {}
+    }
+  ],
+  "authorizationPolicy": {
+    "mode": "request_when_required",
+    "preauthorizedCapabilities": [
+      "text.generate"
+    ],
+    "prohibitedCapabilities": [
+      "filesystem.write",
+      "network.external"
+    ]
+  },
+  "eventDelivery": {
+    "mode": "inline"
+  },
+  "createdAt": "2026-06-13T00:00:00Z"
+}
