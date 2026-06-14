@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "./runtime_event.v1.schema.json",
+  "title": "Runtime Event v1-alpha.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "eventId",
+    "requestId",
+    "traceId",
+    "runtimeId",
+    "sequence",
+    "type",
+    "timestamp",
+    "summary",
+    "artifactRefs",
+    "validationRefs",
+    "evidenceRefs"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "runtime_event.v1-alpha.2"
+    },
+    "eventId": {
+      "$ref": "./common_defs.v1.schema.json#/$defs/id"
+    },
+    "requestId": {
+      "$ref": "./common_defs.v1.schema.json#/$defs/id"
+    },
+    "traceId": {
+      "$ref": "./common_defs.v1.schema.json#/$defs/traceId"
+    },
+    "runtimeId": {
+      "$ref": "./common_defs.v1.schema.json#/$defs/runtimeId"
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "type": {
+      "enum": [
+        "execution_started",
+        "progress",
+        "artifact_produced",
+        "validation_started",
+        "validation_completed",
+        "execution_completed",
+        "execution_failed",
+        "execution_cancelled"
+      ]
+    },
+    "timestamp": {
+      "$ref": "./common_defs.v1.schema.json#/$defs/timestamp"
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "artifactRefs": {
+      "type": "array",
+      "items": {
+        "$ref": "./common_defs.v1.schema.json#/$defs/artifactRef"
+      }
+    },
+    "validationRefs": {
+      "type": "array",
+      "items": {
+        "$ref": "./common_defs.v1.schema.json#/$defs/artifactRef"
+      }
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "items": {
+        "$ref": "./common_defs.v1.schema.json#/$defs/artifactRef"
+      }
+    },
+    "validationOutcome": {
+      "enum": [
+        "passed",
+        "failed",
+        "error"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "artifact_produced"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "properties": {
+          "artifactRefs": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "validation_completed"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "required": [
+          "validationOutcome"
+        ],
+        "properties": {
+          "validationRefs": {
+            "minItems": 1
+          }
+        }
+      }
+    }
+  ]
+}

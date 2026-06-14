@@ -4,17 +4,17 @@
 
 ```text
 Handshake
+-> Execution Request
 -> Request Accepted
--> Execution Started
--> Progress / Event Stream
--> Authorization Required
--> Checkpoint
--> Result
+-> Observed Runtime Events
+-> Execution Result
 -> Trace Bundle
--> Master Acceptance
+-> Master Acceptance Handoff
 ```
 
-Not every execution uses every optional stage.
+The minimal protocol defines portable evidence at the Runtime boundary. It does
+not define an SDK, transport, Adapter implementation, or Master decision
+engine.
 
 ## 1. Handshake
 
@@ -29,7 +29,23 @@ The Adapter publishes an `adapter_manifest` containing:
 
 Unsupported capabilities must be declared explicitly.
 
-## 2. Request Accepted
+For this stage, protocol version negotiation targets `1.0.0-alpha.2`.
+
+## 2. Execution Request
+
+The Master sends an `execution_request` containing:
+
+- stable request and trace identity;
+- an idempotency key;
+- an opaque Master-owned `contractEnvelope`;
+- requested capabilities;
+- budget and authorization policy;
+- event delivery preference.
+
+The protocol validates the envelope structure but does not interpret its
+payload.
+
+## 3. Request Accepted
 
 The Adapter validates:
 
@@ -42,74 +58,86 @@ The Adapter validates:
 Acceptance means the request is valid and registered. It does not mean
 execution has started.
 
-## 3. Execution Started
+Request acceptance is transport behavior in `1.0.0-alpha.2`; it is not a required
+Runtime trace event.
 
-The Runtime begins work associated with the accepted request and trace.
+## 4. Observed Runtime Events
 
-The Adapter must preserve the original `requestId`, `traceId`, and
-`idempotencyKey`.
+The Runtime boundary emits ordered events with a shared `requestId`, `traceId`,
+and `runtimeId`.
 
-## 4. Progress and Event Stream
+The minimal event types are:
 
-The Adapter exposes ordered execution events when supported.
+| Event | Meaning |
+|---|---|
+| `execution_started` | Runtime execution began |
+| `progress` | A non-terminal progress observation occurred |
+| `artifact_produced` | The Runtime produced an artifact reference |
+| `validation_started` | Validation began |
+| `validation_completed` | Validation produced `passed`, `failed`, or `error` |
+| `execution_completed` | Runtime execution completed operationally |
+| `execution_failed` | Runtime execution failed |
+| `execution_cancelled` | Runtime execution was cancelled |
 
-Events may describe:
+Events are Runtime-observed records. They may contain artifact, validation, and
+evidence references, but they do not contain Master acceptance decisions.
 
-- progress;
-- tool activity;
-- artifacts;
-- warnings;
-- capability degradation;
-- verification;
-- blocking conditions.
+Sequence values must be unique, continuous, and increasing from `1`.
+Timestamps must be non-decreasing.
 
 Runtime-native events must be normalized before entering the common protocol.
 
-## 5. Authorization Required
+## 5. Terminal Event
 
-When an action exceeds current authorization, execution must pause before the
-action occurs.
+Each trace contains exactly one terminal event:
 
-The Adapter reports:
+- `execution_completed`;
+- `execution_failed`; or
+- `execution_cancelled`.
 
-- the requested capability;
-- intended action;
-- expected impact;
-- whether execution can continue without it.
+The terminal event must be the final event in sequence.
 
-The Adapter must not grant itself additional authority.
+## 6. Execution Result
 
-## 6. Checkpoint
-
-A Runtime may expose a resumable checkpoint.
-
-A checkpoint identifies the protocol state and may carry an opaque
-Runtime-specific resume token. The token is not interpreted by the core
-protocol.
-
-Checkpoint support is optional and must be declared during handshake.
-
-## 7. Result
-
-The Runtime emits one terminal execution result:
+The Runtime emits one `execution_result` summarizing its operational outcome:
 
 - `succeeded`;
-- `partial`;
-- `blocked`;
-- `failed`;
+- `failed`; or
 - `cancelled`.
 
-These are Runtime execution outcomes, not Master acceptance outcomes.
+The result includes:
 
-## 8. Trace Bundle
+- execution timestamps;
+- event count;
+- artifact, validation, and evidence references;
+- a summary;
+- a non-authoritative `masterAcceptanceHint`.
 
-A trace bundle contains normalized Runtime-observed evidence associated with
-the request.
+Result status must match the terminal event:
 
-The trace bundle may reference Runtime-native evidence without embedding a raw
-vendor format into the core schema.
+| Terminal event | Result status |
+|---|---|
+| `execution_completed` | `succeeded` |
+| `execution_failed` | `failed` |
+| `execution_cancelled` | `cancelled` |
 
-## 9. Master Acceptance
+`succeeded` means the Runtime execution path completed. It does not mean the
+Master accepted the result.
+
+## 7. Trace Bundle
+
+The `trace_bundle` joins:
+
+- the opaque `contractEnvelope`;
+- ordered Runtime events;
+- one execution result;
+- stable request, trace, and Runtime identity.
+
+The bundle provides enough portable references for the Master to inspect
+artifacts, validation signals, and Runtime evidence. It does not embed or
+require a vendor's raw session format.
+
+## 8. Master Acceptance Handoff
 
 The Master evaluates:
 
@@ -124,13 +152,26 @@ The Master evaluates:
 The Master then decides whether the goal is accepted, partially accepted,
 rejected, or requires further execution.
 
-## Contract Envelope Digest
+`masterAcceptanceHint` is advisory only. It cannot mark the work accepted.
 
-For JSON contract payloads in `v1-alpha.1`, the digest is:
+## Optional Alpha Digest Conformance
 
-1. canonicalize the payload using RFC 8785;
-2. encode it as UTF-8;
-3. compute SHA-256;
-4. store the lowercase hexadecimal value.
+`contractEnvelope.digest` is optional in `1.0.0-alpha.2`.
 
-The protocol treats the payload as opaque despite verifying its digest.
+Implementations are not required to canonicalize or hash a payload to implement
+the minimal trace protocol. If digest conformance is enabled for a JSON payload,
+the alpha convention is RFC 8785 canonical JSON encoded as UTF-8 and hashed
+with SHA-256.
+
+Digest verification does not authorize the protocol to interpret the opaque
+Master Contract payload.
+
+## Deferred Work
+
+The minimal lifecycle does not define:
+
+- control commands;
+- resumable checkpoints;
+- streaming transport mechanics;
+- Runtime hooks;
+- SDK or Adapter APIs.

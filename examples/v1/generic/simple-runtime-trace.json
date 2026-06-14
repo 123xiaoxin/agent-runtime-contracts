@@ -1,0 +1,185 @@
+{
+  "schemaVersion": "trace_bundle.v1-alpha.2",
+  "requestId": "req-trace-success-001",
+  "traceId": "trace-success-001",
+  "runtimeId": "example.runtime.local",
+  "contractEnvelope": {
+    "schemaUri": "urn:example:master-contract:execution:v1",
+    "schemaVersion": "1.0.0",
+    "payload": {
+      "goal": "Produce and validate a greeting artifact.",
+      "successCriteria": [
+        "The artifact contains: Hello from a generic runtime."
+      ]
+    }
+  },
+  "events": [
+    {
+      "schemaVersion": "runtime_event.v1-alpha.2",
+      "eventId": "event-success-001",
+      "requestId": "req-trace-success-001",
+      "traceId": "trace-success-001",
+      "runtimeId": "example.runtime.local",
+      "sequence": 1,
+      "type": "execution_started",
+      "timestamp": "2026-06-15T01:00:00Z",
+      "summary": "Runtime execution started.",
+      "artifactRefs": [],
+      "validationRefs": [],
+      "evidenceRefs": []
+    },
+    {
+      "schemaVersion": "runtime_event.v1-alpha.2",
+      "eventId": "event-success-002",
+      "requestId": "req-trace-success-001",
+      "traceId": "trace-success-001",
+      "runtimeId": "example.runtime.local",
+      "sequence": 2,
+      "type": "progress",
+      "timestamp": "2026-06-15T01:00:01Z",
+      "summary": "Greeting content generated.",
+      "artifactRefs": [],
+      "validationRefs": [],
+      "evidenceRefs": [
+        {
+          "uri": "evidence://trace-success-001/generation-001",
+          "name": "generation-observation",
+          "mediaType": "application/json"
+        }
+      ]
+    },
+    {
+      "schemaVersion": "runtime_event.v1-alpha.2",
+      "eventId": "event-success-003",
+      "requestId": "req-trace-success-001",
+      "traceId": "trace-success-001",
+      "runtimeId": "example.runtime.local",
+      "sequence": 3,
+      "type": "artifact_produced",
+      "timestamp": "2026-06-15T01:00:02Z",
+      "summary": "Greeting artifact produced.",
+      "artifactRefs": [
+        {
+          "uri": "artifact://trace-success-001/greeting.txt",
+          "name": "greeting.txt",
+          "mediaType": "text/plain"
+        }
+      ],
+      "validationRefs": [],
+      "evidenceRefs": []
+    },
+    {
+      "schemaVersion": "runtime_event.v1-alpha.2",
+      "eventId": "event-success-004",
+      "requestId": "req-trace-success-001",
+      "traceId": "trace-success-001",
+      "runtimeId": "example.runtime.local",
+      "sequence": 4,
+      "type": "validation_started",
+      "timestamp": "2026-06-15T01:00:03Z",
+      "summary": "Artifact validation started.",
+      "artifactRefs": [
+        {
+          "uri": "artifact://trace-success-001/greeting.txt",
+          "name": "greeting.txt",
+          "mediaType": "text/plain"
+        }
+      ],
+      "validationRefs": [],
+      "evidenceRefs": []
+    },
+    {
+      "schemaVersion": "runtime_event.v1-alpha.2",
+      "eventId": "event-success-005",
+      "requestId": "req-trace-success-001",
+      "traceId": "trace-success-001",
+      "runtimeId": "example.runtime.local",
+      "sequence": 5,
+      "type": "validation_completed",
+      "timestamp": "2026-06-15T01:00:04Z",
+      "summary": "Artifact validation passed.",
+      "artifactRefs": [
+        {
+          "uri": "artifact://trace-success-001/greeting.txt",
+          "name": "greeting.txt",
+          "mediaType": "text/plain"
+        }
+      ],
+      "validationRefs": [
+        {
+          "uri": "validation://trace-success-001/content-check-001",
+          "name": "content-check",
+          "mediaType": "application/json"
+        }
+      ],
+      "evidenceRefs": [
+        {
+          "uri": "evidence://trace-success-001/validation-output-001",
+          "name": "validation-output",
+          "mediaType": "application/json"
+        }
+      ],
+      "validationOutcome": "passed"
+    },
+    {
+      "schemaVersion": "runtime_event.v1-alpha.2",
+      "eventId": "event-success-006",
+      "requestId": "req-trace-success-001",
+      "traceId": "trace-success-001",
+      "runtimeId": "example.runtime.local",
+      "sequence": 6,
+      "type": "execution_completed",
+      "timestamp": "2026-06-15T01:00:05Z",
+      "summary": "Runtime execution completed successfully.",
+      "artifactRefs": [
+        {
+          "uri": "artifact://trace-success-001/greeting.txt",
+          "name": "greeting.txt",
+          "mediaType": "text/plain"
+        }
+      ],
+      "validationRefs": [
+        {
+          "uri": "validation://trace-success-001/content-check-001",
+          "name": "content-check",
+          "mediaType": "application/json"
+        }
+      ],
+      "evidenceRefs": []
+    }
+  ],
+  "result": {
+    "schemaVersion": "execution_result.v1-alpha.2",
+    "requestId": "req-trace-success-001",
+    "traceId": "trace-success-001",
+    "runtimeId": "example.runtime.local",
+    "status": "succeeded",
+    "startedAt": "2026-06-15T01:00:00Z",
+    "completedAt": "2026-06-15T01:00:05Z",
+    "eventCount": 6,
+    "artifactRefs": [
+      {
+        "uri": "artifact://trace-success-001/greeting.txt",
+        "name": "greeting.txt",
+        "mediaType": "text/plain"
+      }
+    ],
+    "validationRefs": [
+      {
+        "uri": "validation://trace-success-001/content-check-001",
+        "name": "content-check",
+        "mediaType": "application/json"
+      }
+    ],
+    "evidenceRefs": [
+      {
+        "uri": "evidence://trace-success-001/validation-output-001",
+        "name": "validation-output",
+        "mediaType": "application/json"
+      }
+    ],
+    "summary": "The Runtime produced and validated the requested artifact.",
+    "masterAcceptanceHint": "likely_accept"
+  },
+  "createdAt": "2026-06-15T01:00:06Z"
+}

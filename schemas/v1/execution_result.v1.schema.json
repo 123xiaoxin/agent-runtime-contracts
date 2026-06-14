@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "./execution_result.v1.schema.json",
+  "title": "Execution Result v1-alpha.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "requestId",
+    "traceId",
+    "runtimeId",
+    "status",
+    "startedAt",
+    "completedAt",
+    "eventCount",
+    "artifactRefs",
+    "validationRefs",
+    "evidenceRefs",
+    "summary",
+    "masterAcceptanceHint"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "execution_result.v1-alpha.2"
+    },
+    "requestId": {
+      "$ref": "./common_defs.v1.schema.json#/$defs/id"
+    },
+    "traceId": {
+      "$ref": "./common_defs.v1.schema.json#/$defs/traceId"
+    },
+    "runtimeId": {
+      "$ref": "./common_defs.v1.schema.json#/$defs/runtimeId"
+    },
+    "status": {
+      "enum": [
+        "succeeded",
+        "failed",
+        "cancelled"
+      ]
+    },
+    "startedAt": {
+      "$ref": "./common_defs.v1.schema.json#/$defs/timestamp"
+    },
+    "completedAt": {
+      "$ref": "./common_defs.v1.schema.json#/$defs/timestamp"
+    },
+    "eventCount": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "artifactRefs": {
+      "type": "array",
+      "items": {
+        "$ref": "./common_defs.v1.schema.json#/$defs/artifactRef"
+      }
+    },
+    "validationRefs": {
+      "type": "array",
+      "items": {
+        "$ref": "./common_defs.v1.schema.json#/$defs/artifactRef"
+      }
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "items": {
+        "$ref": "./common_defs.v1.schema.json#/$defs/artifactRef"
+      }
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "masterAcceptanceHint": {
+      "description": "Non-authoritative Runtime hint. Only the Master can decide acceptance.",
+      "enum": [
+        "not_evaluated",
+        "likely_accept",
+        "likely_reject",
+        "requires_review"
+      ]
+    }
+  }
+}

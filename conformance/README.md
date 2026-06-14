@@ -1,56 +1,42 @@
 # Conformance
 
-Conformance verifies that an Adapter implements protocol semantics truthfully.
+Conformance verifies the minimal request, observed trace, Runtime result, and
+Master acceptance handoff structures.
 
-## v0.1-alpha Skeleton Scope
+## Minimal Checks
 
-The first skeleton defines conformance categories but does not provide a
-conformance runner.
+Stage 2 requires only the following checks:
 
-The included generic examples must validate against their corresponding
-schemas.
+1. Every JSON document parses.
+2. Every schema passes JSON Schema Draft 2020-12 schema validation.
+3. Every example validates against its corresponding schema.
+4. Handshake protocol declarations use `1.0.0-alpha.2`, and each document
+   matches its declared schema revision.
+5. `requestId`, `traceId`, and `runtimeId` are consistent across a trace bundle.
+6. Event sequence values are unique, continuous, and increasing from `1`.
+7. Event timestamps are non-decreasing.
+8. A trace contains exactly one terminal event, and it is the final event.
+9. `result.eventCount` equals `events.length`.
+10. `result.status` matches the terminal event:
+    - `execution_completed` -> `succeeded`
+    - `execution_failed` -> `failed`
+    - `execution_cancelled` -> `cancelled`
 
-## Schema and Semantic Checks
+Validators SHOULD enable JSON Schema format assertion for `date-time`, `uri`,
+and `uri-reference` when available.
 
-JSON Schema validates the structure of protocol documents.
+## Optional Digest Check
 
-It does not establish every semantic invariant:
+`contractEnvelope.digest` is optional for `1.0.0-alpha.2`.
 
-- `uniqueItems` compares complete array values and cannot guarantee that
-  `capabilityId` is unique across objects with different descriptions or other
-  fields. Capability ID deduplication is a conformance check.
-- JSON Schema validates only the shape of a digest. Recomputing and comparing
-  the digest of `contractEnvelope.payload` is a conformance check.
-- Conformance validators SHOULD enable JSON Schema format assertion for
-  `date-time`, `uri`, and `uri-reference` fields when the validator supports
-  it.
-
-## Planned Conformance Categories
-
-- schema validation;
-- JSON Schema format assertion;
-- exact protocol version negotiation;
-- capability declaration honesty;
-- capability ID uniqueness;
-- unsupported capability handling;
-- request identity preservation;
-- idempotency behavior;
-- contract payload digest verification;
-- lifecycle ordering;
-- authorization pause behavior;
-- terminal result uniqueness;
-- declared versus observed evidence consistency;
-- profile isolation;
-- absence of vendor-specific core requirements.
+When digest validation is explicitly enabled for a JSON payload, the alpha
+convention is RFC 8785 canonical JSON with SHA-256. JSON Schema checks only the
+digest field shape; recomputing and comparing the payload digest is an optional
+semantic check.
 
 ## Conformance Principle
 
 Passing JSON Schema validation alone does not establish conformance.
 
-An Adapter must also satisfy lifecycle, authorization, evidence, and
-truthfulness requirements.
-
-## Profile Conformance
-
-A profile may add tests for its Runtime mapping, but profile tests must not
-change common protocol meaning or become mandatory for other Runtimes.
+The minimal semantic checks above establish whether a trace is internally
+consistent. They do not decide Master acceptance.
