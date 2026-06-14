@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "execution_request.v1-alpha.1",
+  "schemaVersion": "execution_request.v1-alpha.2",
   "requestId": "req-example-001",
   "traceId": "trace-example-001",
   "idempotencyKey": "example-simple-request-001",

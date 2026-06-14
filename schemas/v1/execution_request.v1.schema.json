@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "./execution_request.v1.schema.json",
-  "title": "Execution Request v1-alpha.1",
+  "title": "Execution Request v1-alpha.2",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -18,7 +18,7 @@
   ],
   "properties": {
     "schemaVersion": {
-      "const": "execution_request.v1-alpha.1"
+      "const": "execution_request.v1-alpha.2"
     },
     "requestId": {
       "$ref": "./common_defs.v1.schema.json#/$defs/id"
@@ -37,7 +37,6 @@
       "required": [
         "schemaUri",
         "schemaVersion",
-        "digest",
         "payload"
       ],
       "properties": {

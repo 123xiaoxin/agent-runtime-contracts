@@ -1,0 +1,165 @@
+{
+  "schemaVersion": "trace_bundle.v1-alpha.2",
+  "requestId": "req-trace-review-001",
+  "traceId": "trace-review-001",
+  "runtimeId": "example.runtime.local",
+  "contractEnvelope": {
+    "schemaUri": "urn:example:master-contract:execution:v1",
+    "schemaVersion": "1.0.0",
+    "payload": {
+      "goal": "Produce an artifact that passes the requested content check.",
+      "successCriteria": [
+        "The artifact contains the required approval marker."
+      ]
+    }
+  },
+  "events": [
+    {
+      "schemaVersion": "runtime_event.v1-alpha.2",
+      "eventId": "event-review-001",
+      "requestId": "req-trace-review-001",
+      "traceId": "trace-review-001",
+      "runtimeId": "example.runtime.local",
+      "sequence": 1,
+      "type": "execution_started",
+      "timestamp": "2026-06-15T02:00:00Z",
+      "summary": "Runtime execution started.",
+      "artifactRefs": [],
+      "validationRefs": [],
+      "evidenceRefs": []
+    },
+    {
+      "schemaVersion": "runtime_event.v1-alpha.2",
+      "eventId": "event-review-002",
+      "requestId": "req-trace-review-001",
+      "traceId": "trace-review-001",
+      "runtimeId": "example.runtime.local",
+      "sequence": 2,
+      "type": "artifact_produced",
+      "timestamp": "2026-06-15T02:00:01Z",
+      "summary": "Candidate artifact produced.",
+      "artifactRefs": [
+        {
+          "uri": "artifact://trace-review-001/candidate.txt",
+          "name": "candidate.txt",
+          "mediaType": "text/plain"
+        }
+      ],
+      "validationRefs": [],
+      "evidenceRefs": []
+    },
+    {
+      "schemaVersion": "runtime_event.v1-alpha.2",
+      "eventId": "event-review-003",
+      "requestId": "req-trace-review-001",
+      "traceId": "trace-review-001",
+      "runtimeId": "example.runtime.local",
+      "sequence": 3,
+      "type": "validation_started",
+      "timestamp": "2026-06-15T02:00:02Z",
+      "summary": "Content validation started.",
+      "artifactRefs": [
+        {
+          "uri": "artifact://trace-review-001/candidate.txt",
+          "name": "candidate.txt",
+          "mediaType": "text/plain"
+        }
+      ],
+      "validationRefs": [],
+      "evidenceRefs": []
+    },
+    {
+      "schemaVersion": "runtime_event.v1-alpha.2",
+      "eventId": "event-review-004",
+      "requestId": "req-trace-review-001",
+      "traceId": "trace-review-001",
+      "runtimeId": "example.runtime.local",
+      "sequence": 4,
+      "type": "validation_completed",
+      "timestamp": "2026-06-15T02:00:03Z",
+      "summary": "Content validation completed with a failed acceptance signal.",
+      "artifactRefs": [
+        {
+          "uri": "artifact://trace-review-001/candidate.txt",
+          "name": "candidate.txt",
+          "mediaType": "text/plain"
+        }
+      ],
+      "validationRefs": [
+        {
+          "uri": "validation://trace-review-001/content-check-001",
+          "name": "content-check",
+          "mediaType": "application/json"
+        }
+      ],
+      "evidenceRefs": [
+        {
+          "uri": "evidence://trace-review-001/validation-output-001",
+          "name": "validation-output",
+          "mediaType": "application/json"
+        }
+      ],
+      "validationOutcome": "failed"
+    },
+    {
+      "schemaVersion": "runtime_event.v1-alpha.2",
+      "eventId": "event-review-005",
+      "requestId": "req-trace-review-001",
+      "traceId": "trace-review-001",
+      "runtimeId": "example.runtime.local",
+      "sequence": 5,
+      "type": "execution_completed",
+      "timestamp": "2026-06-15T02:00:04Z",
+      "summary": "Runtime execution path completed without an infrastructure failure.",
+      "artifactRefs": [
+        {
+          "uri": "artifact://trace-review-001/candidate.txt",
+          "name": "candidate.txt",
+          "mediaType": "text/plain"
+        }
+      ],
+      "validationRefs": [
+        {
+          "uri": "validation://trace-review-001/content-check-001",
+          "name": "content-check",
+          "mediaType": "application/json"
+        }
+      ],
+      "evidenceRefs": []
+    }
+  ],
+  "result": {
+    "schemaVersion": "execution_result.v1-alpha.2",
+    "requestId": "req-trace-review-001",
+    "traceId": "trace-review-001",
+    "runtimeId": "example.runtime.local",
+    "status": "succeeded",
+    "startedAt": "2026-06-15T02:00:00Z",
+    "completedAt": "2026-06-15T02:00:04Z",
+    "eventCount": 5,
+    "artifactRefs": [
+      {
+        "uri": "artifact://trace-review-001/candidate.txt",
+        "name": "candidate.txt",
+        "mediaType": "text/plain"
+      }
+    ],
+    "validationRefs": [
+      {
+        "uri": "validation://trace-review-001/content-check-001",
+        "name": "content-check",
+        "mediaType": "application/json"
+      }
+    ],
+    "evidenceRefs": [
+      {
+        "uri": "evidence://trace-review-001/validation-output-001",
+        "name": "validation-output",
+        "mediaType": "application/json"
+      }
+    ],
+    "summary": "The Runtime completed, but validation evidence does not support automatic Master acceptance.",
+    "masterAcceptanceHint": "requires_review"
+  },
+  "createdAt": "2026-06-15T02:00:05Z"
+}

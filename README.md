@@ -1,19 +1,19 @@
 # Agent Runtime Contracts
 
-Status: `v0.1-alpha`
+Status: `1.0.0-alpha.2`
 
-Agent Runtime Contracts is a versioned protocol and conformance repository for
-communication between a Master Core and Agent Runtimes.
+Agent Runtime Contracts is a runtime-neutral minimal protocol for execution
+request, observed trace, Runtime result, and Master acceptance handoff.
 
 ## What This Repository Is
 
 This repository defines:
 
-- the boundary between Master Core, Runtime Adapter, and Agent Runtime;
-- protocol messages and lifecycle semantics;
-- capability negotiation;
-- evidence and acceptance semantics;
-- conformance expectations.
+- how a Master sends an opaque Execution Contract to a Runtime boundary;
+- how a Runtime reports ordered observed events;
+- how a Runtime reports its execution result;
+- how events and result form a verifiable trace bundle;
+- where Runtime completion ends and Master acceptance begins.
 
 It is a protocol repository, not an SDK.
 
@@ -26,14 +26,29 @@ This repository does not:
 - provide a Runtime Adapter implementation;
 - select models or tools;
 - define Master governance policy;
+- define a universal Agent industry standard;
 - replace an Agent Runtime.
+
+## Minimal Protocol Flow
+
+```text
+Execution Request
+-> Observed Runtime Events
+-> Execution Result
+-> Trace Bundle
+-> Master Acceptance Handoff
+```
+
+The trace records what the Runtime observed. The Master uses the trace,
+artifacts, validation references, and its own Execution Contract to decide
+acceptance.
 
 ## Component Boundary
 
 | Component | Responsibility |
 |---|---|
 | Master Core | Owns intent governance, the Execution Contract, Runtime selection, and final acceptance |
-| Agent Runtime Contracts | Defines portable protocol messages, lifecycle semantics, and conformance rules |
+| Agent Runtime Contracts | Defines the minimal request, event, result, trace, and handoff structures |
 | Runtime Adapter | Translates protocol messages to and from one Runtime |
 | Agent Runtime | Performs execution and emits Runtime-observed evidence |
 
@@ -45,17 +60,30 @@ This protocol carries the contract through an opaque envelope containing:
 
 - schema URI;
 - schema version;
-- digest;
 - opaque payload.
 
 The protocol validates the envelope but does not interpret the contract payload.
 
-For JSON payloads, the alpha specification computes the digest from the
-RFC 8785 canonical representation using SHA-256.
+An envelope may also contain a digest. Digest support is retained as a future
+integrity direction, but it is not required by the minimal `1.0.0-alpha.2`
+implementation.
 
-JSON Schema validates only the shape of the digest field. Verifying that the
-digest matches `contractEnvelope.payload` is a conformance check, not a schema
+When an implementation opts into alpha digest conformance for a JSON payload,
+it may use RFC 8785 canonical JSON with SHA-256. JSON Schema validates only the
+digest field shape; recomputing the payload digest is an optional conformance
 check.
+
+## Observed Trace
+
+The minimal trace contains:
+
+- ordered Runtime events;
+- artifact, validation, and evidence references;
+- one Runtime execution result;
+- stable request, trace, and Runtime identities.
+
+Observed Runtime trace is the factual source for what occurred inside the
+Runtime boundary. It does not decide whether the Master goal was achieved.
 
 ## Runtime Success Is Not Master Acceptance
 
@@ -72,19 +100,15 @@ Only the Master may perform final acceptance.
 
 ## Repository Scope
 
-The `v0.1-alpha` skeleton contains:
+Protocol version `1.0.0-alpha.2` contains:
 
-- core boundary documents;
-- lifecycle and evidence definitions;
-- versioning rules;
 - adapter manifest and execution request schemas;
-- generic examples;
-- an OpenClaw reference profile placeholder;
-- conformance scope;
-- architecture decisions.
+- Runtime event, execution result, and trace bundle schemas;
+- generic success and acceptance-review examples;
+- minimal structural and trace conformance rules.
 
-Runtime event, checkpoint, result, control command, and trace bundle schemas are
-deferred until the lifecycle semantics are reviewed.
+SDKs, Runtime Adapters, control commands, checkpoints, Runtime hooks, and
+transport implementations remain out of scope.
 
 ## Maturity
 
